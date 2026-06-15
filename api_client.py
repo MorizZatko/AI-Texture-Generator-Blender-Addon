@@ -8,6 +8,7 @@ from . import __init__
 from . import workflow
 
 
+comfy_url = "http://127.0.0.1:8188"
 
 def download_comfy_image(prompt):
     folder_name = "".join([c if c.isalnum() else "_" for c in prompt[:20]])
@@ -36,9 +37,15 @@ def download_comfy_image(prompt):
         
         downloaded_files = {}
         
+        start_time = time.time()
+        timeout_seconds = 30
+
         while len(downloaded_files) < len(map_nodes):
+            if time.time() - start_time > timeout_seconds:
+                print(f"ERROR: Timeout! ComfyUI does not answer...")
+                return None
             try:
-                with urllib.request.urlopen(f"{__init__.comfy_url}/history/{prompt_id}") as r:
+                with urllib.request.urlopen(f"{comfy_url}/history/{prompt_id}") as r:
                     history = json.loads(r.read().decode())
                     if prompt_id in history:
                         node_id = "//"
@@ -47,8 +54,7 @@ def download_comfy_image(prompt):
                             if node_id in outputs and map_type not in downloaded_files:
                                 filename = outputs[node_id]['images'][0]['filename']
                                 
-                                
-                                full_img_url = f"{__init__.comfy_url}/view?filename={filename}"
+                                full_img_url = f"{comfy_url}/view?filename={filename}"
                                 save_path = os.path.join(current_save_dir, f"{map_type}_{filename}")
                                 
                                 with urllib.request.urlopen(full_img_url) as img_r:
