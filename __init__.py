@@ -8,7 +8,7 @@ bl_info = {
 }
 
 
-comfy_url = "http://127.0.0.1:8188"
+
 
 class AI_Texture_Preferences(bpy.types.AddonPreferences):
     bl_idname = __package__
@@ -22,3 +22,4 @@ def register():
     ui.register()
     api_client.register()
     material_logic.register()
+    AI_Texture_Preferences.register()
