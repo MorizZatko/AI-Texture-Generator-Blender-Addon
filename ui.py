@@ -14,6 +14,7 @@ class VIEW3D_PT_ai_texture_generator(bpy.types.Panel):
         layout = self.layout
         scene = context.scene
         layout.prop(scene, "ai_texture_prompt")
+        layout.prop(scene, "ai_texture_save_path")
         layout.operator("texture.generate_ai_material", text="Generate Material")
 
 
@@ -23,14 +24,32 @@ class TEXTURE_OT_generate_ai_material(bpy.types.Operator):
     
     def execute(self, context):
         prompt = context.scene.ai_texture_prompt
-        prefs = context.preferences.addons[__package__].preferences
-        save_dir = prefs.save_path
-        self.report({'INFO'}, "AI is thinking... Blender my freeze!")
-        
+        save_dir = context.scene.ai_texture_save_path
+        if not save_dir:
+            self.report({'ERROR'}, "Please select a save path in the panel!")
+            return {'CANCELLED'}
         try:
-            paths = api_client.download_comfy_image(prompt, save_dir)
-            material_logic.create_ai_material(prompt, paths)
-            self.report({'INFO'}, "Material successfully created!")
+            image_path = api_client.download_comfy_image(prompt, save_dir)
+            if image_path is None:
+                self.report({'ERROR'}, "API returned None!")
+                return {'CANCELLED'}
+            
+            material_logic.create_ai_material(prompt, image_path)
+            self.report({'INFO'}, "Material succesfully created!")
         except Exception as e:
-            self.report({'ERROR'}, f"AI failed to deliver image. Check Console!")
+            self.report({'ERROR'}, f"API Error: {str(e)}")
+            return {'FINISHED'}
+        
         return {'FINISHED'}
+classes = [
+    VIEW3D_PT_ai_texture_generator,
+    TEXTURE_OT_generate_ai_material
+]
+
+def register():
+    for cls in classes:
+        bpy.utils.register_class(cls)
+
+def unregister():
+    for cls in classes:
+        bpy.utils.unregister_class(cls)

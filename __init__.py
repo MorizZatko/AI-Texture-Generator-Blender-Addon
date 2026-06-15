@@ -1,4 +1,7 @@
+print("!!! Blender läd die neue Version !!!")
+
 import bpy
+import importlib
 from . import ui, api_client, material_logic
 
 bl_info = {
@@ -7,19 +10,21 @@ bl_info = {
     "blender": (4, 0, 0)
 }
 
-
-
-
-class AI_Texture_Preferences(bpy.types.AddonPreferences):
-    bl_idname = __package__
-    save_path = bpy.props.StringProperty(
-        name="Save Directory",
-        subtype='DIR_PATH'
-    )
-
-
 def register():
+    importlib.reload(ui)
+    importlib.reload(api_client)
+    importlib.reload(material_logic)
+    bpy.types.Scene.ai_texture_prompt = bpy.props.StringProperty(
+        name="Prompt",
+        default="rusty metal"
+    )
+    bpy.types.Scene.ai_texture_save_path = bpy.props.StringProperty(
+        name="Save Path",
+        subtype='DIR_PATH',
+        default="C:\\Blender\Assets"
+    )
     ui.register()
-    api_client.register()
-    material_logic.register()
-    AI_Texture_Preferences.register()
+
+def unregister():
+    ui.unregister()
+    del bpy.types.Scene.ai_texture_prompt
