@@ -1,12 +1,23 @@
+"""Material Logic Module.
+
+This module handles the PBR material node construction.
+"""
+
 import bpy
-import urllib.request
-import os
-import json
-import time
-import traceback
 
 
 def create_ai_material(prompt, paths):
+    """Construct a complete PBR material node tree.
+
+    For: Diffuse, Roughness and Normal/Bump.
+    
+    Args:
+        prompt (str): Text description of the texture.
+        paths (dict): Dictionary containing file paths for the received maps.
+
+    Returns:
+        material (bpy.types.material): The newly created material object. 
+    """
     mat_name = f"AI_{prompt[:10]}"
     material = bpy.data.materials.get(mat_name) or bpy.data.materials.new(name=mat_name)
     material.use_nodes = True
@@ -27,7 +38,8 @@ def create_ai_material(prompt, paths):
         diff_node.image = bpy.data.images.load(paths["diffuse"])
         links.new(diff_node.outputs["Color"], principled_node.inputs["Base Color"])
     
-    # Roughness
+    # Roughness:
+        # Set to 'Non-Color' to ensure grayscale values are interpreted correctly
     if "roughness" in paths:
         rough_node = nodes.new(type="ShaderNodeTexImage")
         rough_node.location = (principled_node.location.x -400, principled_node.location.y -200)
@@ -35,7 +47,9 @@ def create_ai_material(prompt, paths):
         rough_node.image.colorspace_settings.name = 'Non-Color'
         links.new(rough_node.outputs["Color"], principled_node.inputs["Roughness"])
     
-    # Normal (Bump)
+    # Normal:
+        # Using a Bump node to convert grayscale height data into surface normals.
+        # Set to grayscale ('Non-Color') for linear data interpretation.
     if "normal" in paths:
         nor_img_node = nodes.new(type="ShaderNodeTexImage")
         nor_img_node.location = (principled_node.location.x -400, principled_node.location.y -500)   
