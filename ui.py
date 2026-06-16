@@ -10,7 +10,7 @@ from . import material_logic
 
 
 class VIEW3D_PT_ai_texture_generator(bpy.types.Panel):
-    """Initialize the 'N-Panel' window in Blender."""
+    """Defines the 'N-Panel' window in Blender."""
 
     bl_label = "AI Texture Generator"
     bl_idname = "VIEW3D_PT_ai_texture_generator"
@@ -34,7 +34,7 @@ class TEXTURE_OT_generate_ai_material(bpy.types.Operator):
     bl_label = "Generate AI Material"
     
     def execute(self, context):
-        """Triggers the AI generation and initialize material construction.
+        """Triggers the AI generation and initialize the material construction.
 
         Args:
             self: The operator instance.
