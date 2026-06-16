@@ -53,7 +53,7 @@ Before installing the addon, ensure you have the following environment set up:
 1. **Clone the repository:**
 ```bash 
 git clone https://github.com/MorizZatko/AI-Texture-Generator-Blender-Addon.git
-bash´´´
+```
 2. **ZIP the folder:** Right click on the downloaded folder -> Compress -> ZIP
 3. **Install in Blender:** Edit -> Preferences -> Add-ons -> Install -> Select your zipped folder
 4. **Checkbox:** Enable checkbox for **AI Texture Generator**
